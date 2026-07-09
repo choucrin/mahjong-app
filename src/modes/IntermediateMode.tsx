@@ -23,7 +23,7 @@ function computeSituationalYaku(common: CommonConditions, isMenzen: boolean): Ya
 export default function IntermediateMode() {
   const [common, setCommon] = useState(defaultCommonConditions('yonma'));
   const [fuFactors, setFuFactors] = useState(defaultFuFactors());
-  const [hanInputMethod, setHanInputMethod] = useState<'checklist' | 'manual'>('checklist');
+  const [hanInputMethod, setHanInputMethod] = useState<'checklist' | 'manual'>('manual');
   const [selectedYaku, setSelectedYaku] = useState<Set<string>>(new Set());
   const [manualHan, setManualHan] = useState(1);
   const [doraCount, setDoraCount] = useState(0);
@@ -150,21 +150,33 @@ export default function IntermediateMode() {
             <div className="segmented">
               <button
                 type="button"
-                className={hanInputMethod === 'checklist' ? 'segmented-btn active' : 'segmented-btn'}
-                onClick={() => setHanInputMethod('checklist')}
-              >
-                役一覧から選択
-              </button>
-              <button
-                type="button"
                 className={hanInputMethod === 'manual' ? 'segmented-btn active' : 'segmented-btn'}
                 onClick={() => setHanInputMethod('manual')}
               >
                 翻数を直接入力
               </button>
+              <button
+                type="button"
+                className={hanInputMethod === 'checklist' ? 'segmented-btn active' : 'segmented-btn'}
+                onClick={() => setHanInputMethod('checklist')}
+              >
+                役一覧から選択
+              </button>
             </div>
 
-            {hanInputMethod === 'checklist' ? (
+            {hanInputMethod === 'manual' ? (
+              <div className="field-row">
+                <label>役の翻数合計(立直・ツモ等を除く)</label>
+                <input
+                  type="number"
+                  min={0}
+                  className="number-input"
+                  value={manualHan}
+                  onChange={(e) => setManualHan(Math.max(0, Number(e.target.value)))}
+                />
+                <label>翻</label>
+              </div>
+            ) : (
               <div className="yaku-checklist">
                 {YAKU_TABLE.map((y) => (
                   <label key={y.key} className="yaku-checklist-item">
@@ -179,18 +191,6 @@ export default function IntermediateMode() {
                 <div className="hint-text">
                   ※ 立直・一発・自摸・海底摸月・河底撈魚・嶺上開花・槍槓は上の共通条件から自動計算されます
                 </div>
-              </div>
-            ) : (
-              <div className="field-row">
-                <label>役の翻数合計(立直・ツモ等を除く)</label>
-                <input
-                  type="number"
-                  min={0}
-                  className="number-input"
-                  value={manualHan}
-                  onChange={(e) => setManualHan(Math.max(0, Number(e.target.value)))}
-                />
-                <label>翻</label>
               </div>
             )}
           </div>
